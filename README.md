@@ -1,417 +1,211 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🚀 Lesson Queue - NestJS GraphQL Queue System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modern, production-ready message and job queue system built with NestJS, GraphQL, Prisma, and Redis.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## ✨ Features
 
-## Description
+- **🔄 Message & Job Queues** - Bull queue with Redis backend
+- **📊 GraphQL API** - Auto-generated schema from decorators
+- **🗄️ Database** - PostgreSQL with Prisma ORM
+- **⚡ Performance** - Optimized with connection pooling and caching
+- **🛡️ Security** - Validation, CORS, and security headers
+- **🏥 Health Checks** - Comprehensive system monitoring
+- **📝 Logging** - Structured logging with NestJS Logger
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🏗️ Architecture
 
-## Project setup
-
-```bash
-$ yarn install
 ```
-
-## Compile and run the project
-
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+src/
+├── user/          # User management with roles
+├── shop/          # Shop management
+├── product/       # Product catalog
+├── subscription/  # Shop subscriptions
+├── notification/  # Notification system with queue
+├── queue/         # Bull queue configuration
+├── shared/        # Shared services (Prisma, DTOs)
+└── health/        # Health check endpoints
 ```
-
-## Run tests
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-# Lesson Queue - Shop Notification System
-
-Hệ thống message và job queue đơn giản với NestJS, GraphQL, Prisma và Bull Queue.
-
-## Tính năng
-
-- **User Management**: Quản lý user với role (SHOP_OWNER, CUSTOMER, ADMIN)
-- **Shop Management**: Quản lý shop (chỉ user có role SHOP_OWNER mới tạo được shop)
-- **Subscription System**: Hệ thống đăng ký theo dõi shop (chỉ user có role CUSTOMER mới đăng ký được)
-- **Product Management**: Quản lý sản phẩm
-- **Notification System**: Gửi thông báo tự động khi có sản phẩm mới
-- **Message Queue**: Xử lý events bất đồng bộ
-- **Job Queue**: Xử lý tác vụ gửi email
-
-## Công nghệ sử dụng
-
-- **NestJS**: Framework backend
-- **GraphQL**: API layer
-- **Prisma**: ORM và database
-- **PostgreSQL**: Database chính
-- **Redis + Bull**: Job queue
-- **TypeScript**: Ngôn ngữ lập trình
-
-## Database Schema
-
-### User Model (Unified)
-
-- **SHOP_OWNER**: Có thể tạo và quản lý shop
-- **CUSTOMER**: Có thể đăng ký theo dõi shop
-- **ADMIN**: Quyền quản trị hệ thống
-
-### Shop Model
-
-- Mỗi shop phải có owner (user với role SHOP_OWNER)
-- Shop có thể có nhiều sản phẩm và subscribers
-
-### Subscription Model
-
-- Liên kết giữa customer (user với role CUSTOMER) và shop
-- Mỗi customer chỉ đăng ký 1 lần với mỗi shop
 
 ## 🚀 Quick Start
 
-### Option 1: Auto Setup (Khuyến nghị)
+### Prerequisites
+
+- Node.js 18+
+- Docker & Docker Compose
+- Yarn package manager
+
+### 1. Clone & Install
 
 ```bash
-# 1. Clone project
-git clone <your-repo>
+git clone <repository-url>
 cd lesson-queue
-
-# 2. Chạy setup script
-chmod +x setup-database.sh
-./setup-database.sh
-
-# 3. Khởi động ứng dụng
-yarn start:dev
-```
-
-### Option 2: Manual Setup
-
-#### 1. Cài đặt dependencies
-
-```bash
 yarn install
 ```
 
-#### 2. Khởi động PostgreSQL
+### 2. Environment Setup
 
 ```bash
-# Sử dụng Docker (Khuyến nghị)
-docker run -d \
-  --name postgres-lesson-queue \
-  -e POSTGRES_DB=lesson_queue \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=password \
-  -p 5432:5432 \
-  postgres:15
+# Copy environment template
+cp env.example .env
 
-# Hoặc cài đặt PostgreSQL locally
-# macOS: brew install postgresql && brew services start postgresql
-# Ubuntu: sudo apt install postgresql postgresql-contrib
+# Update values in .env file
 ```
 
-#### 3. Khởi động Redis
+### 3. Start Services
 
 ```bash
-# Sử dụng Docker
-docker run -d \
-  --name redis-lesson-queue \
-  -p 6379:6379 \
-  redis:alpine
+# Start PostgreSQL & Redis
+docker-compose up -d
 
-# Hoặc cài đặt Redis locally
-# macOS: brew install redis && brew services start redis
-# Ubuntu: sudo apt install redis-server
+# Generate Prisma client
+yarn db:generate
+
+# Push database schema
+yarn db:push
+
+# Seed database (optional)
+yarn seed
 ```
 
-#### 4. Cấu hình database
-
-Tạo file `.env` với nội dung:
-
-```env
-# Database
-DATABASE_URL="postgresql://postgres:password@localhost:5432/lesson_queue?schema=public"
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-# App
-PORT=3000
-NODE_ENV=development
-```
-
-#### 5. Khởi tạo database
+### 4. Run Application
 
 ```bash
-# Tạo database schema
-npx prisma db push
-
-# Hoặc sử dụng migration
-npx prisma migrate dev --name init
-```
-
-#### 6. Khởi động ứng dụng
-
-```bash
-# Development
+# Development mode
 yarn start:dev
 
-# Production
+# Production build
 yarn build
 yarn start:prod
 ```
 
-## 🗄️ Database Management
+## 🌐 API Endpoints
 
-### Prisma Commands
+- **GraphQL Playground**: `http://localhost:3000/graphql`
+- **Health Check**: `http://localhost:3000/api/v1/health`
+- **API Base**: `http://localhost:3000/api/v1`
 
-```bash
-# Generate Prisma client
-npx prisma generate
+## 📊 Queue System
 
-# Push schema changes
-npx prisma db push
+### Notification Queue
 
-# Create migration
-npx prisma migrate dev --name <migration_name>
-
-# Reset database
-npx prisma migrate reset
-
-# Open Prisma Studio (Database GUI)
-npx prisma studio
-
-# Pull schema from database
-npx prisma db pull
-```
-
-### PostgreSQL Commands
-
-```bash
-# Kết nối database
-psql -U postgres -h localhost -d lesson_queue
-
-# Xem tables
-\dt
-
-# Xem schema
-\dn
-
-# Xem data
-SELECT * FROM users;
-SELECT * FROM shops;
-SELECT * FROM products;
-SELECT * FROM subscriptions;
-SELECT * FROM notifications;
-
-# Thoát
-\q
-```
-
-### Database Backup & Restore
-
-```bash
-# Backup database
-pg_dump -U postgres -h localhost lesson_queue > backup.sql
-
-# Restore database
-psql -U postgres -h localhost lesson_queue < backup.sql
-```
-
-## 🔧 Troubleshooting
-
-### PostgreSQL Issues
-
-```bash
-# Kiểm tra container status
-docker ps -a | grep postgres
-
-# Xem logs
-docker logs postgres-lesson-queue
-
-# Restart container
-docker restart postgres-lesson-queue
-
-# Kiểm tra connection
-npx prisma db pull
-```
-
-### Redis Issues
-
-```bash
-# Kiểm tra container status
-docker ps -a | grep redis
-
-# Xem logs
-docker logs redis-lesson-queue
-
-# Restart container
-docker restart redis-lesson-queue
-
-# Test connection
-redis-cli ping
-```
-
-### Common Issues
-
-1. **Port already in use**: Thay đổi port trong `.env` hoặc stop service đang sử dụng port
-2. **Database connection failed**: Kiểm tra PostgreSQL container và credentials
-3. **Prisma client not generated**: Chạy `npx prisma generate`
-4. **Schema sync failed**: Kiểm tra database connection và chạy `npx prisma db push`
-
-## 📊 Monitoring & Debugging
-
-### Database Performance
-
-```bash
-# Xem active connections
-SELECT * FROM pg_stat_activity;
-
-# Xem slow queries
-SELECT query, mean_time, calls FROM pg_stat_statements ORDER BY mean_time DESC;
-
-# Xem table sizes
-SELECT schemaname, tablename, pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size FROM pg_tables ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+```typescript
+// Add job to queue
+await notificationQueue.add('send-email', {
+  notificationId: 'uuid',
+  customerEmail: 'user@example.com',
+  message: 'New product available!',
+});
 ```
 
 ### Queue Monitoring
 
-```bash
-# Xem Redis keys
-redis-cli keys "*"
+- **Health Check**: `/api/v1/health/queue`
+- **Redis Status**: `/api/v1/health/redis`
+- **Database Status**: `/api/v1/health/database`
 
-# Xem queue stats
-redis-cli llen bull:notification:wait
-redis-cli llen bull:notification:active
-redis-cli llen bull:notification:completed
-redis-cli llen bull:notification:failed
-```
-
-## 🚀 Production Deployment
+## 🔧 Configuration
 
 ### Environment Variables
 
-```env
-# Production
-DATABASE_URL="postgresql://user:password@host:5432/database?schema=public&sslmode=require"
-REDIS_HOST=your-redis-host
-REDIS_PORT=6379
-REDIS_PASSWORD=your-redis-password
-NODE_ENV=production
-PORT=3000
+| Variable       | Default            | Description             |
+| -------------- | ------------------ | ----------------------- |
+| `NODE_ENV`     | `development`      | Application environment |
+| `PORT`         | `3000`             | Server port             |
+| `DATABASE_URL` | `postgresql://...` | Database connection     |
+| `REDIS_HOST`   | `localhost`        | Redis host              |
+| `REDIS_PORT`   | `6380`             | Redis port              |
+
+### Queue Settings
+
+- **Job Retry**: 3 attempts with exponential backoff
+- **Job Cleanup**: Keep last 100 completed, 50 failed
+- **Stalled Jobs**: Check every 30s, max 1 stalled
+
+## 🧪 Testing
+
+```bash
+# Unit tests
+yarn test
+
+# E2E tests
+yarn test:e2e
+
+# Test coverage
+yarn test:cov
 ```
 
-### Database Optimization
+## 📦 Available Scripts
 
-```sql
--- Tạo indexes cho performance
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_shops_owner_id ON shops(owner_id);
-CREATE INDEX idx_products_shop_id ON products(shop_id);
-CREATE INDEX idx_subscriptions_customer_shop ON subscriptions(customer_id, shop_id);
-CREATE INDEX idx_notifications_customer_id ON notifications(customer_id);
-CREATE INDEX idx_notifications_status ON notifications(status);
+```bash
+yarn start:dev      # Development with hot reload
+yarn build          # Build for production
+yarn start:prod     # Start production server
+yarn seed           # Seed database
+yarn db:push        # Push database schema
+yarn db:studio      # Open Prisma Studio
 ```
 
-### Security
+## 🏗️ Development
 
-```sql
--- Tạo read-only user cho monitoring
-CREATE USER monitor_user WITH PASSWORD 'monitor_password';
-GRANT CONNECT ON DATABASE lesson_queue TO monitor_user;
-GRANT USAGE ON SCHEMA public TO monitor_user;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO monitor_user;
+### Adding New Features
+
+1. **Create DTOs** in `src/{module}/dto/`
+2. **Add Service** methods in `src/{module}/{module}.service.ts`
+3. **Create Resolver** in `src/{module}/{module}.resolver.ts`
+4. **Update Module** in `src/{module}/{module}.module.ts`
+
+### GraphQL Schema
+
+Schema is auto-generated from DTO decorators. No manual schema files needed.
+
+## 🚀 Production Deployment
+
+### Docker
+
+```bash
+# Build image
+docker build -t lesson-queue .
+
+# Run container
+docker run -p 3000:3000 lesson-queue
 ```
 
-## �� Tài liệu tham khảo
+### Environment
 
-- [Prisma Documentation](https://www.prisma.io/docs/)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [NestJS Documentation](https://docs.nestjs.com/)
-- [GraphQL Documentation](https://graphql.org/learn/)
-- [Bull Queue Documentation](https://docs.bullmq.io/)
+- Set `NODE_ENV=production`
+- Configure production database and Redis
+- Set secure JWT secrets
+- Enable CORS restrictions
+
+## 📚 Tech Stack
+
+- **Backend**: NestJS, TypeScript
+- **API**: GraphQL with Apollo Server
+- **Database**: PostgreSQL with Prisma ORM
+- **Queue**: Bull with Redis
+- **Validation**: class-validator, class-transformer
+- **Testing**: Jest, Supertest
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+
+- Create an issue
+- Check documentation
+- Review code examples
+
+---
+
+**Built with ❤️ using NestJS and modern web technologies**
