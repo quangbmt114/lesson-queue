@@ -1,0 +1,100 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SHOP_OWNER
+  CUSTOMER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  role      UserRole @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ownedShops    Shop[] // Shop owner
+  subscriptions Subscription[] // Customer subscriptions
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Shop {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  ownerId     String // Shop owner
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  products      Product[]
+  subscriptions Subscription[]
+  notifications Notification[]
+
+  @@map("shops")
+}
+
+model Subscription {
+  id         String   @id @default(cuid())
+  customerId String // User with CUSTOMER role
+  shopId     String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  customer User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  shop     Shop @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, shopId])
+  @@map("subscriptions")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  shopId      String
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  shop          Shop           @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  @@map("products")
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  customerId String // User with CUSTOMER role
+  shopId     String
+  productId  String?
+  message    String
+  sentAt     DateTime @default(now())
+  status     String   @default("pending") // pending, sent, failed
+
+  // Relations
+  customer User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  shop     Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  product  Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@map("notifications")
+}
