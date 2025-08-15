@@ -112,11 +112,15 @@ export class NotificationService {
     productName: string,
   ) {
     try {
-      this.logger.log(
-        `Sending product notification for shop ${shopId}, product ${productId}`,
-      );
+      this.logger.log('🚀 Bắt đầu gửi thông báo sản phẩm mới...');
+      this.logger.log(`📋 Thông tin:`);
+      this.logger.log(`   - Shop ID: ${shopId}`);
+      this.logger.log(`   - Product ID: ${productId}`);
+      this.logger.log(`   - Product Name: ${productName}`);
 
       // Get shop subscribers with pagination for large datasets
+      this.logger.log('🔍 Tìm kiếm subscribers của shop...');
+
       const subscriptions = await this.prisma.subscription.findMany({
         where: { shopId },
         include: {
@@ -126,14 +130,25 @@ export class NotificationService {
       });
 
       if (subscriptions.length === 0) {
-        this.logger.warn(`No subscribers found for shop ${shopId}`);
+        this.logger.warn(`⚠️ Không tìm thấy subscribers cho shop ${shopId}`);
         return {
           message: 'No subscribers found for this shop',
           count: 0,
+          total: 0,
+          errors: 0,
         };
       }
 
+      this.logger.log(`✅ Tìm thấy ${subscriptions.length} subscribers`);
+      subscriptions.forEach((sub, index) => {
+        this.logger.log(
+          `   ${index + 1}. ${sub.customer.name} (${sub.customer.email})`,
+        );
+      });
+
       // Process notifications in batches
+      this.logger.log('📧 Bắt đầu xử lý thông báo theo batch...');
+
       const batchSize = 100;
       let processedCount = 0;
       let successCount = 0;
@@ -141,12 +156,22 @@ export class NotificationService {
 
       for (let i = 0; i < subscriptions.length; i += batchSize) {
         const batch = subscriptions.slice(i, i + batchSize);
+        const batchNumber = Math.floor(i / batchSize) + 1;
+        const totalBatches = Math.ceil(subscriptions.length / batchSize);
+
+        this.logger.log(
+          `🔄 Xử lý batch ${batchNumber}/${totalBatches} (${batch.length} subscribers)`,
+        );
 
         for (const subscription of batch) {
           try {
             const message = `New product available: ${productName}`;
+            this.logger.log(
+              `📤 Gửi thông báo cho: ${subscription.customer.name} (${subscription.customer.email})`,
+            );
 
             // Create notification record
+            this.logger.log(`📝 Tạo notification record...`);
             const notification = await this.createNotification({
               customerId: subscription.customer.id,
               shopId,
@@ -155,8 +180,12 @@ export class NotificationService {
               sentAt: new Date(),
               status: 'pending',
             });
+            this.logger.log(
+              `✅ Notification record đã tạo: ${notification.id}`,
+            );
 
             // Add job to queue with priority
+            this.logger.log(`📨 Thêm job vào queue...`);
             await this.notificationQueue.add(
               'send-email',
               {
@@ -173,11 +202,14 @@ export class NotificationService {
                 },
               },
             );
+            this.logger.log(
+              `✅ Job đã thêm vào queue cho ${subscription.customer.email}`,
+            );
 
             successCount++;
           } catch (error) {
             this.logger.error(
-              `Failed to process notification for customer ${subscription.customer.id}: ${error.message}`,
+              `❌ Lỗi khi xử lý thông báo cho customer ${subscription.customer.id}: ${error.message}`,
             );
             errorCount++;
           }
@@ -188,13 +220,18 @@ export class NotificationService {
         // Log progress for large batches
         if (subscriptions.length > batchSize) {
           this.logger.log(
-            `Processed ${processedCount}/${subscriptions.length} notifications`,
+            `📊 Tiến độ: ${processedCount}/${subscriptions.length} notifications đã xử lý`,
           );
         }
       }
 
+      this.logger.log('🎉 Hoàn thành gửi thông báo sản phẩm!');
+      this.logger.log(`📊 Kết quả cuối cùng:`);
+      this.logger.log(`   - Tổng subscribers: ${subscriptions.length}`);
+      this.logger.log(`   - Xử lý thành công: ${successCount}`);
+      this.logger.log(`   - Số lỗi: ${errorCount}`);
       this.logger.log(
-        `Product notification completed: ${successCount} success, ${errorCount} errors`,
+        `   - Tỷ lệ thành công: ${((successCount / subscriptions.length) * 100).toFixed(1)}%`,
       );
 
       return {
@@ -205,7 +242,7 @@ export class NotificationService {
       };
     } catch (error) {
       this.logger.error(
-        `Failed to send product notification: ${error.message}`,
+        `❌ Lỗi nghiêm trọng khi gửi thông báo sản phẩm: ${error.message}`,
       );
       throw error;
     }

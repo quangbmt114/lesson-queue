@@ -19,11 +19,21 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed": "node prisma/seed.js",
+    "prisma:reset": "npx prisma migrate reset && npm run prisma:seed",
+    "prisma:migrate:dev": "npx prisma migrate dev --name $npm_config_name",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "prisma:seed": "node prisma/seed.js",
     "seed:reset": "npx prisma migrate reset --force && node prisma/seed.js",
     "db:push": "npx prisma db push",
     "db:studio": "npx prisma studio",
-    "db:generate": "npx prisma generate"
+    "db:generate": "npx prisma generate",
+    "demo:check": "./run-demo.sh",
+    "demo:processor": "node demo-queue-processor.js",
+    "demo:queue": "node demo-queue.js",
+    "demo:auto-flow": "node demo-auto-flow.js",
+    "test:auto-flow": "node test-auto-flow.js",
+    "demo:setup": "cp demo.env.example .env && echo '✅ Demo environment file created. Please update values in .env'"
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
