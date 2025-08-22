@@ -1,8 +1,14 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { Product, CreateProductInput, UpdateProductInput } from './dto';
+import {
+  CreateProductInput,
+  CreateProductOutput,
+  UpdateProductInput,
+  UpdateProductOutput,
+} from './dto/product.dto';
+import { Product } from '../@generated-dto';
 
-@Resolver(() => Product)
+@Resolver('Product')
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
 
@@ -21,19 +27,17 @@ export class ProductResolver {
     return this.productService.findByShop(shopId);
   }
 
-  @Mutation(() => Product)
-  async createProduct(
-    @Args('createProductInput') createProductInput: CreateProductInput,
-  ) {
-    return this.productService.create(createProductInput);
+  @Mutation(() => CreateProductOutput)
+  async createProduct(@Args('input') input: CreateProductInput) {
+    return await this.productService.create(input);
   }
 
-  @Mutation(() => Product)
+  @Mutation(() => UpdateProductOutput)
   async updateProduct(
     @Args('id') id: string,
-    @Args('updateProductInput') updateProductInput: UpdateProductInput,
+    @Args('input') input: UpdateProductInput,
   ) {
-    return this.productService.update(id, updateProductInput);
+    return this.productService.update(id, input);
   }
 
   @Mutation(() => Boolean)

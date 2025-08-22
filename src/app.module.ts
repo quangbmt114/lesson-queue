@@ -6,6 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 // Core modules
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { QueueModule } from './queue/queue.module';
+import { EmailMarketingModule } from './queue/email-marketing.module';
 
 // Feature modules
 import { UserModule } from './user/user.module';
@@ -47,6 +48,7 @@ import { AppService } from './app.service';
     // Core modules
     PrismaModule,
     QueueModule,
+    EmailMarketingModule,
 
     // Feature modules
     UserModule,

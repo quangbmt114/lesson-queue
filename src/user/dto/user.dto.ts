@@ -4,12 +4,7 @@ import {
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
-
-export enum UserRole {
-  SHOP_OWNER = 'SHOP_OWNER',
-  CUSTOMER = 'CUSTOMER',
-  ADMIN = 'ADMIN',
-}
+import { UserRole } from 'src/@generated-dto';
 
 registerEnumType(UserRole, {
   name: 'UserRole',

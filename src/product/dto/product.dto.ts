@@ -1,67 +1,58 @@
-import { Field, InputType, ObjectType, Int, Float } from '@nestjs/graphql';
-import { Shop } from '../../shop/dto/shop.dto';
-import { Notification } from '../../notification/dto/notification.dto';
+import {
+  Field,
+  InputType,
+  Int,
+  ArgsType,
+  ID,
+  ObjectType,
+} from '@nestjs/graphql';
+import { IsString, IsNumber, IsOptional } from 'class-validator';
+import { Product } from 'src/@generated-dto';
 
 @InputType()
+@ArgsType()
 export class CreateProductInput {
   @Field()
   shopId: string;
 
   @Field()
+  @IsString()
   name: string;
 
   @Field({ nullable: true })
+  @IsOptional()
+  @IsString()
   description?: string;
 
-  @Field(() => Float)
+  @Field(() => Int)
+  @IsNumber()
   price: number;
-
-  @Field()
-  createdAt: Date;
-
-  @Field()
-  updatedAt: Date;
 }
 
 @InputType()
+@ArgsType()
 export class UpdateProductInput {
+  @Field()
+  id: string;
+
   @Field({ nullable: true })
   name?: string;
 
   @Field({ nullable: true })
   description?: string;
 
-  @Field(() => Float, { nullable: true })
+  @Field(() => Number, { nullable: true })
   price?: number;
 }
 
 @ObjectType()
-export class Product {
-  @Field()
-  id: string;
+export class CreateProductOutput {
+  @Field(() => Product)
+  data: Product;
+}
 
-  @Field()
-  shopId: string;
-
-  @Field()
-  name: string;
-
-  @Field({ nullable: true })
-  description?: string;
-
-  @Field(() => Float)
-  price: number;
-
-  @Field()
-  createdAt: Date;
-
-  @Field()
-  updatedAt: Date;
-
-  // Relations
-  @Field(() => Shop)
-  shop: Shop;
-
-  @Field(() => [Notification])
-  notifications: Notification[];
+@ObjectType()
+export class UpdateProductOutput {
+  @Field(() => Product)
+  data: Product;
 }

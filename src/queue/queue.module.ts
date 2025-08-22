@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MessageQueueService } from './message-queue.service';
+import { MessageQueueProcessor } from './message-queue.processor';
+import { QueueMonitorService } from './queue-monitor.service';
+import { QueueMonitorController } from './queue-monitor.controller';
 
 @Module({
   imports: [
@@ -11,46 +15,62 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           host: configService.get('REDIS_HOST', 'localhost'),
           port: configService.get('REDIS_PORT', 6380),
           password: configService.get('REDIS_PASSWORD', ''),
-          // Redis optimization - compatible with Bull
           maxRetriesPerRequest: 3,
           retryDelayOnFailover: 100,
-          // Connection pooling
           lazyConnect: true,
           keepAlive: 30000,
-          // Performance
           connectTimeout: 10000,
           commandTimeout: 5000,
         },
-        // Bull optimization
         defaultJobOptions: {
-          removeOnComplete: 100, // Keep last 100 completed jobs
-          removeOnFail: 50, // Keep last 50 failed jobs
-          attempts: 3, // Retry failed jobs 3 times
-          backoff: {
-            type: 'exponential',
-            delay: 2000,
-          },
+          removeOnComplete: 100,
+          removeOnFail: 50,
+          attempts: 3,
+          backoff: { type: 'exponential', delay: 2000 },
         },
-        // Queue monitoring
         settings: {
-          stalledInterval: 30000, // Check for stalled jobs every 30s
-          maxStalledCount: 1, // Max stalled jobs before marking as failed
+          stalledInterval: 30000,
+          maxStalledCount: 1,
         },
       }),
       inject: [ConfigService],
     }),
+    // Message Queue (Chính) - Xử lý business logic
     BullModule.registerQueue({
-      name: 'notification',
-      // Queue-specific settings
+      name: 'message',
       defaultJobOptions: {
         priority: 1,
         delay: 0,
         attempts: 3,
-        removeOnComplete: 50,
-        removeOnFail: 25,
+        removeOnComplete: 100,
+        removeOnFail: 50,
+      },
+    }),
+    // Notification Queue - Xử lý gửi email
+    BullModule.registerQueue({
+      name: 'notification',
+      defaultJobOptions: {
+        priority: 2,
+        delay: 0,
+        attempts: 3,
+        removeOnComplete: 100,
+        removeOnFail: 50,
+      },
+    }),
+    // Email Marketing Queue - Xử lý email marketing
+    BullModule.registerQueue({
+      name: 'email-marketing',
+      defaultJobOptions: {
+        priority: 1,
+        delay: 0,
+        attempts: 3,
+        removeOnComplete: 100,
+        removeOnFail: 50,
       },
     }),
   ],
-  exports: [BullModule],
+  providers: [MessageQueueService, MessageQueueProcessor, QueueMonitorService],
+  controllers: [QueueMonitorController],
+  exports: [BullModule, MessageQueueService, BullModule],
 })
 export class QueueModule {}

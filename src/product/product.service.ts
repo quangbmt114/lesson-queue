@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../shared/prisma/prisma.service';
-import { NotificationService } from '../notification/notification.service';
+import { MessageQueueService } from '../queue/message-queue.service';
 import { CreateProductInput, UpdateProductInput } from './dto';
 
 @Injectable()
@@ -9,29 +9,28 @@ export class ProductService {
 
   constructor(
     private prisma: PrismaService,
-    private notificationService: NotificationService,
+    private messageQueueService: MessageQueueService,
   ) {}
 
-  async create(createProductInput: CreateProductInput) {
+  async create(input: CreateProductInput) {
     this.logger.log('🚀 Bắt đầu tạo sản phẩm mới...');
-    this.logger.log(
-      `📦 Product data: ${JSON.stringify(createProductInput, null, 2)}`,
-    );
+    this.logger.log(`📦 Product data: ${JSON.stringify(input, null, 2)}`);
 
     try {
       // Tạo sản phẩm mới
       this.logger.log('📝 Đang tạo sản phẩm trong database...');
 
       const product = await this.prisma.product.create({
-        data: createProductInput,
+        data: {
+          ...input,
+          price: input.price || 0,
+        },
         include: {
           shop: {
-            include: {
-              subscriptions: {
-                include: {
-                  customer: true,
-                },
-              },
+            select: {
+              id: true,
+              name: true,
+              description: true,
             },
           },
         },
@@ -44,45 +43,41 @@ export class ProductService {
       this.logger.log(
         `   - Shop: ${product.shop.name} (ID: ${product.shop.id})`,
       );
-      this.logger.log(
-        `   - Số subscribers: ${product.shop.subscriptions.length}`,
-      );
 
-      // Tự động gửi thông báo cho tất cả subscribers của shop
-      this.logger.log('📧 Bắt đầu gửi thông báo tự động...');
+      // Gửi message vào message queue (chính) thay vì gọi trực tiếp
+      this.logger.log('📤 Gửi PRODUCT_CREATED message vào message queue...');
 
       try {
-        const notificationResult =
-          await this.notificationService.sendProductNotification(
-            product.shopId,
-            product.id,
-            product.name,
-          );
-
-        this.logger.log(`📧 Kết quả gửi thông báo:`);
-        this.logger.log(`   - Tổng subscribers: ${notificationResult.total}`);
-        this.logger.log(`   - Gửi thành công: ${notificationResult.count}`);
-        this.logger.log(`   - Số lỗi: ${notificationResult.errors || 0}`);
-        this.logger.log(`   - Message: ${notificationResult.message}`);
-
-        if (notificationResult.errors && notificationResult.errors > 0) {
-          this.logger.warn(
-            `⚠️ Có ${notificationResult.errors} lỗi khi gửi thông báo`,
-          );
-        }
+        await this.messageQueueService.publishProductMessage(
+          'PRODUCT_CREATED',
+          product.shopId,
+          product.id,
+          product.name,
+          product.shop.name,
+          {
+            price: product.price,
+            description: product.description,
+            createdAt: product.createdAt,
+          },
+        );
 
         this.logger.log(
-          '🎉 Flow tự động hoàn thành: Sản phẩm mới → Thông báo subscribers',
+          '✅ PRODUCT_CREATED message đã được gửi vào message queue',
         );
-      } catch (notificationError) {
-        this.logger.error('❌ Lỗi khi gửi thông báo:', notificationError);
+        this.logger.log(
+          '🎉 Flow tự động: Sản phẩm mới → Message Queue → Xử lý → Thông báo subscribers',
+        );
+      } catch (messageError) {
+        this.logger.error('❌ Lỗi khi gửi message vào queue:', messageError);
         this.logger.error(
-          '💡 Sản phẩm vẫn được tạo thành công, chỉ có thông báo bị lỗi',
+          '💡 Sản phẩm vẫn được tạo thành côprocess-messageng, chỉ có message queue bị lỗi',
         );
         // Không throw error để không ảnh hưởng đến việc tạo sản phẩm
       }
 
-      return product;
+      return {
+        data: product,
+      };
     } catch (error) {
       this.logger.error('❌ Lỗi khi tạo sản phẩm:', error);
       this.logger.error('💡 Flow bị gián đoạn tại bước tạo sản phẩm');
@@ -178,27 +173,33 @@ export class ProductService {
     this.logger.log(`   - Tên mới: ${product.name}`);
     this.logger.log(`   - Shop: ${product.shop.name}`);
 
-    // Nếu tên sản phẩm thay đổi, gửi thông báo cập nhật
+    // Nếu tên sản phẩm thay đổi, gửi message cập nhật
     if (updateProductInput.name && updateProductInput.name !== product.name) {
-      this.logger.log('📧 Tên sản phẩm đã thay đổi, gửi thông báo cập nhật...');
+      this.logger.log(
+        '📤 Tên sản phẩm đã thay đổi, gửi PRODUCT_UPDATED message...',
+      );
 
       try {
-        await this.notificationService.sendProductNotification(
+        await this.messageQueueService.publishProductMessage(
+          'PRODUCT_UPDATED',
           product.shopId,
           product.id,
           product.name,
+          product.shop.name,
+          {
+            oldName: updateProductInput.name,
+            updatedAt: product.updatedAt,
+          },
         );
 
         this.logger.log(
-          `📧 Đã gửi thông báo cập nhật cho sản phẩm: ${product.name}`,
+          `✅ PRODUCT_UPDATED message đã được gửi vào message queue`,
         );
       } catch (error) {
-        this.logger.error('❌ Lỗi khi gửi thông báo cập nhật:', error);
+        this.logger.error('❌ Lỗi khi gửi message cập nhật:', error);
       }
     } else {
-      this.logger.log(
-        'ℹ️ Tên sản phẩm không thay đổi, không cần gửi thông báo',
-      );
+      this.logger.log('ℹ️ Tên sản phẩm không thay đổi, không cần gửi message');
     }
 
     return product;
@@ -229,19 +230,26 @@ export class ProductService {
     this.logger.log(`   - Tên: ${product.name}`);
     this.logger.log(`   - Shop: ${product.shop.name}`);
 
-    // Gửi thông báo xóa sản phẩm
-    this.logger.log('📧 Gửi thông báo xóa sản phẩm...');
+    // Gửi message xóa sản phẩm trước khi xóa
+    this.logger.log('📤 Gửi PRODUCT_DELETED message vào message queue...');
 
     try {
-      await this.notificationService.sendProductNotification(
+      await this.messageQueueService.publishProductMessage(
+        'PRODUCT_DELETED',
         product.shopId,
         product.id,
         product.name,
+        product.shop.name,
+        {
+          deletedAt: new Date(),
+        },
       );
 
-      this.logger.log(`📧 Đã gửi thông báo xóa sản phẩm: ${product.name}`);
+      this.logger.log(
+        `✅ PRODUCT_DELETED message đã được gửi vào message queue`,
+      );
     } catch (error) {
-      this.logger.error('❌ Lỗi khi gửi thông báo xóa:', error);
+      this.logger.error('❌ Lỗi khi gửi message xóa:', error);
     }
 
     // Xóa sản phẩm
@@ -255,7 +263,7 @@ export class ProductService {
       `✅ Sản phẩm đã được xóa thành công: ${product.name} (ID: ${product.id})`,
     );
     this.logger.log(
-      '🎉 Flow xóa sản phẩm hoàn thành: Thông báo → Xóa database',
+      '🎉 Flow xóa sản phẩm hoàn thành: Message Queue → Thông báo → Xóa database',
     );
 
     return product;

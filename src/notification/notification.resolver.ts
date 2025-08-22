@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { NotificationService } from './notification.service';
-import { Notification, CreateNotificationInput } from './dto';
+import { Notification } from 'src/@generated-dto';
+import { CreateNotificationInput } from './dto/notification.dto';
 
 @Resolver(() => Notification)
 export class NotificationResolver {

@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ShopService } from './shop.service';
-import { Shop, CreateShopInput, UpdateShopInput } from './dto';
+import { Shop } from 'src/@generated-dto';
+import { CreateShopInput, UpdateShopInput } from './dto/shop.dto';
 
 @Resolver(() => Shop)
 export class ShopResolver {

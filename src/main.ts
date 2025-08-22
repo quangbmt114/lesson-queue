@@ -21,8 +21,8 @@ async function bootstrap() {
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Remove properties not defined in DTOs
-      forbidNonWhitelisted: true, // Throw error for non-whitelisted properties
+      whitelist: false, // Remove properties not defined in DTOs
+      forbidNonWhitelisted: false, // Disable this for GraphQL compatibility
       transform: true, // Transform payloads to DTO instances
       transformOptions: {
         enableImplicitConversion: true, // Enable implicit conversion

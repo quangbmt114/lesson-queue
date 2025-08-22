@@ -7,7 +7,7 @@ import type { Queue } from 'bull';
 export class HealthController {
   constructor(
     private prisma: PrismaService,
-    @InjectQueue('notification') private notificationQueue: Queue,
+    @InjectQueue('message') private messageQueue: Queue,
   ) {}
 
   @Get()
@@ -62,7 +62,7 @@ export class HealthController {
   async checkRedis() {
     try {
       const startTime = Date.now();
-      await this.notificationQueue.client.ping();
+      await this.messageQueue.client.ping();
       const responseTime = Date.now() - startTime;
 
       return {
@@ -83,7 +83,7 @@ export class HealthController {
   async checkQueue() {
     try {
       const startTime = Date.now();
-      const queueStats = await this.notificationQueue.getJobCounts();
+      const queueStats = await this.messageQueue.getJobCounts();
       const responseTime = Date.now() - startTime;
 
       return {
@@ -94,7 +94,7 @@ export class HealthController {
       };
     } catch (error) {
       return {
-        service: 'queue',
+        service: 'redis',
         status: 'error',
         error: error.message,
       };

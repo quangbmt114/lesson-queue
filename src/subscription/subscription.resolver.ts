@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { SubscriptionService } from './subscription.service';
-import { Subscription, CreateSubscriptionInput } from './dto';
+import { Subscription } from 'src/@generated-dto';
+import { CreateSubscriptionInput } from './dto/subscription.dto';
 
 @Resolver(() => Subscription)
 export class SubscriptionResolver {
